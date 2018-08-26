@@ -21,8 +21,7 @@ class Workspace(object):
     M_APPLY_EDIT = 'workspace/applyEdit'
     M_SHOW_MESSAGE = 'window/showMessage'
 
-    def __init__(self, root_uri, endpoint, config=None):
-        self._config = config
+    def __init__(self, root_uri, endpoint):
         self._root_uri = root_uri
         self._endpoint = endpoint
         self._root_uri_scheme = uris.urlparse(self._root_uri)[0]
@@ -98,13 +97,12 @@ class Workspace(object):
             doc_uri, source=source, version=version,
             extra_sys_path=self.source_roots(path),
             rope_project_builder=self._rope_project_builder,
-            config=self._config,
         )
 
 
 class Document(object):
 
-    def __init__(self, uri, source=None, version=None, local=True, extra_sys_path=None, rope_project_builder=None, config=None):
+    def __init__(self, uri, source=None, version=None, local=True, extra_sys_path=None, rope_project_builder=None):
         self.uri = uri
         self.version = version
         self.path = uris.to_fs_path(uri)
@@ -114,7 +112,6 @@ class Document(object):
         self._source = source
         self._extra_sys_path = extra_sys_path or []
         self._rope_project_builder = rope_project_builder
-        self._config = config
 
     def __str__(self):
         return str(self.uri)

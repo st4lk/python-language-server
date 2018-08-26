@@ -1,7 +1,4 @@
 # Copyright 2017 Palantir Technologies, Inc.
-import jedi
-import mock
-
 from test.fixtures import DOC_URI, DOC
 from pyls.workspace import Document
 
@@ -100,29 +97,3 @@ def test_document_end_of_file_edit():
         "print 'b'\n",
         "o",
     ]
-
-
-def test_sys_path_python_virtualenv(config, monkeypatch):
-    config.update({"python_virtualenv": '/path/to/virtualenv/'})
-    doc = Document(DOC_URI, DOC, config=config)
-    get_sys_path_mock = mock.Mock(return_value=['/new/sys/path'])
-    mocked = mock.Mock(return_value=mock.Mock(get_sys_path=get_sys_path_mock))
-    with monkeypatch.context():
-        monkeypatch.setattr(jedi.api.environment, 'create_environment', mocked)
-        sys_path = doc.sys_path()
-    assert mocked.call_count == 1
-    assert '/path/to/virtualenv/' in mocked.call_args[0]
-    assert '/new/sys/path' in sys_path
-
-
-def test_sys_path_python_interpreter(config, monkeypatch):
-    config.update({"python_interpreter": '/path/to/virtualenv/bin/python'})
-    doc = Document(DOC_URI, DOC, config=config)
-    env_mock = mock.Mock(return_value=['/new/sys/path'])
-    mocked = mock.Mock(return_value=mock.Mock(get_sys_path=env_mock))
-    with monkeypatch.context():
-        monkeypatch.setattr(jedi.api.environment, 'Environment', mocked)
-        sys_path = doc.sys_path()
-    assert mocked.call_count == 1
-    assert '/path/to/virtualenv/bin/python' in mocked.call_args[0]
-    assert '/new/sys/path' in sys_path
